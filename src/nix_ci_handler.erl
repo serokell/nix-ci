@@ -37,7 +37,8 @@ handle_trusted(_, _, Req) ->
     cowboy_req:reply(200, Req).
 
 build(Coordinates = {Name, Ref, Rev}) ->
-    nix_ci_github:status(Coordinates, <<"Building...">>, <<"pending">>),
+    URL0 = io_lib:format(<<"https://ci.serokell.io/log/?pid=~w">>, [self()]).
+    nix_ci_github:status(Coordinates, <<"Building...">>, <<"pending">>, URL0),
     Expr = nix_ci_builder:git_expression(nix_ci_github:ssh_url(Name), Ref, Rev),
     {Status, Output} = nix_ci_builder:build(Expr),
     Description = list_to_binary(lists:last(string:tokens(Output, "\n"))),
